@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Course Merge Manager browser prototype">
+    <title>Course Merge Manager Prototype</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="prototype-page" data-course-merge-prototype>
+        <!-- Prototype header -->
+        <header class="prototype-header">
+            <div>
+                <p class="eyebrow">Course administration</p>
+                <h1>Course Merge Manager</h1>
+                <p class="page-intro">Combine course sections into a single Canvas course workspace.</p>
+            </div>
+            <div class="prototype-status">Demo user: Jordan Lee · Spring 2026</div>
+        </header>
+
+        <!-- Top banners -->
+        <section class="prototype-banner info-banner" role="status" aria-label="Prototype information">
+            <span class="banner-icon" aria-hidden="true">ⓘ</span>
+            <div class="banner-copy"><strong>Design preview</strong><small>Browser-only prototype. No authentication, Canvas, LMIS, or database calls are made.</small></div>
+            <button type="button" class="button button-secondary button-small" data-action="reset">Reset</button>
+        </section>
+        <section id="ferpa-agreement" class="prototype-banner warning-banner" role="alert" aria-labelledby="ferpa-title">
+            <span class="banner-icon" aria-hidden="true">⚠</span>
+            <div class="banner-copy"><strong id="ferpa-title">Educational or pedagogical purpose required</strong><small>Please confirm that this section merge supports an educational or pedagogical purpose before continuing.</small></div>
+            <button type="button" class="button button-primary button-small" data-action="continue-ferpa">Yes, continue</button>
+        </section>
+
+        <div id="prototype-feedback" class="feedback is-hidden" role="status" aria-live="polite"></div>
+
+        <!-- Filter bar -->
+        <section class="course-discovery" aria-labelledby="course-filter-heading">
+            <div class="discovery-heading">
+                <div>
+                    <h2 id="course-filter-heading">Find a course or section</h2>
+                    <p>Filter the list without losing your selections.</p>
+                </div>
+                <div class="filter-count" data-filter-count aria-live="polite"></div>
+            </div>
+            <div class="filter-controls">
+                <div class="search-field">
+                    <label for="course-filter">Search courses</label>
+                    <input id="course-filter" type="search" placeholder="Name, SIS ID, semester, subject, or section" autocomplete="off">
+                </div>
+                <div>
+                    <label for="term-filter">Semester</label>
+                    <select id="term-filter" aria-label="Filter by semester"><option value="">All semesters</option></select>
+                </div>
+                <div>
+                    <label for="campus-filter">Campus</label>
+                    <select id="campus-filter" aria-label="Filter by campus"><option value="">All campuses</option></select>
+                </div>
+                <div>
+                    <label for="eligibility-filter">Eligibility</label>
+                    <select id="eligibility-filter" aria-label="Filter by eligibility">
+                        <option value="eligible">Eligible</option>
+                        <option value="all">All</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="course-sort">Sort</label>
+                    <select id="course-sort" aria-label="Sort courses">
+                        <option value="term">Semester</option>
+                        <option value="name">Course name</option>
+                        <option value="sisId">SIS ID</option>
+                        <option value="section">Section</option>
+                    </select>
+                </div>
+                <button type="button" class="text-button" data-action="clear-filters">Clear filters</button>
+            </div>
+        </section>
+
+        <!-- Workflow tabs -->
+        <div class="tabs-shell">
+            <div class="tabs" id="prototype-tabs" role="tablist" aria-label="Course merge workflows">
+                <button class="tab is-active" id="create-tab" data-tab-target="create" type="button" role="tab" aria-controls="create" aria-selected="true">Create merged course</button>
+                <button class="tab" id="edit-tab" data-tab-target="edit" type="button" role="tab" aria-controls="edit" aria-selected="false" tabindex="-1">Edit merged course</button>
+                <button class="tab" id="remove-tab" data-tab-target="remove" type="button" role="tab" aria-controls="remove" aria-selected="false" tabindex="-1">Remove sections</button>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <!-- Create workflow -->
+            <section class="tab-panel is-active" id="create" role="tabpanel" aria-labelledby="create-tab" tabindex="0">
+                <div class="workflow-card">
+                    <div class="workflow-card-header">
+                        <h2>Create a merged course</h2>
+                        <p>Start with a base course, then choose the sections to bring together.</p>
+                    </div>
+                    <div class="workflow-card-body">
+                        <form data-workflow="create" novalidate>
+                            <div class="field-group">
+                                <label for="create-name">New course name</label>
+                                <input id="create-name" name="name" maxlength="255" placeholder="ex: Math 110 201516SPUP Sec 1-5" required>
+                                <div class="invalid-feedback">Enter a name for the merged course.</div>
+                            </div>
+                            <div class="field-group">
+                                <label for="create-base">Create merged course based on</label>
+                                <select id="create-base" name="base" required data-base-course><option value="">-- Select Course --</option></select>
+                                <div class="invalid-feedback">Choose a base course.</div>
+                                <div class="helper-message" data-selected-summary="base"></div>
+                            </div>
+                            <div class="field-group">
+                                <label for="create-sections-list">Additional sections</label>
+                                <p class="field-note">Sections must be unpublished. Any content in these sections will <strong>not</strong> be retained after the merge is complete.</p>
+                                <div class="course-key" id="create-sections-list">Display Key: Course Name(SIS ID(Semester) - Campus - Mode - Subject - Catalog Number - Section)</div>
+                                <div class="course-picker" data-course-list="create" aria-describedby="create-sections-list"></div>
+                                <div class="helper-message" data-selected-summary="create-sections"></div>
+                                <div class="invalid-feedback selection-error" data-selection-error="create"></div>
+                            </div>
+                            <div class="checkbox-group"><input type="checkbox" id="create-groups" name="groups"><label for="create-groups">Create student groups for each section</label></div>
+                            <div class="checkbox-group"><input type="checkbox" id="create-go" name="go"><label for="create-go">Open the merged course when complete</label></div>
+                            <div class="requirements" data-create-requirements>Enter a name, choose a base course, and select at least one additional section.</div>
+                            <button class="button button-primary" type="submit" data-create-submit disabled aria-disabled="true">Merge courses</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Edit workflow -->
+            <section class="tab-panel" id="edit" role="tabpanel" aria-labelledby="edit-tab" tabindex="0" hidden>
+                <div class="workflow-card">
+                    <div class="workflow-card-header"><h2>Edit a merged course</h2><p>Add another eligible section to an existing merge.</p></div>
+                    <div class="workflow-card-body">
+                        <form data-workflow="edit" novalidate>
+                            <div class="field-group"><label for="edit-merge">Merged course</label><select id="edit-merge" name="merge" required data-merged-course><option value="">Select a merged course</option></select></div>
+                            <div class="field-group"><label for="edit-sections-list">Sections to add</label><div class="course-picker" id="edit-sections-list" data-course-list="edit"></div><div class="helper-message" data-selected-summary="edit-sections"></div><div class="invalid-feedback selection-error" data-selection-error="edit"></div></div>
+                            <button class="button button-primary" type="submit">Add selected sections</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Remove workflow -->
+            <section class="tab-panel" id="remove" role="tabpanel" aria-labelledby="remove-tab" tabindex="0" hidden>
+                <div class="workflow-card">
+                    <div class="workflow-card-header"><h2>Manage merged sections</h2><p>Remove individual sections or delete the entire merge.</p></div>
+                    <div class="workflow-card-body">
+                        <form data-workflow="remove" novalidate>
+                            <div class="field-group"><label for="remove-merge">Merged course</label><select id="remove-merge" name="merge" required data-merged-course><option value="">Select a merged course</option></select></div>
+                            <div class="field-group"><label for="remove-sections-list">Sections to remove</label><div class="course-picker" id="remove-sections-list" data-course-list="remove"></div><div class="helper-message" data-selected-summary="remove-sections"></div><div class="invalid-feedback selection-error" data-selection-error="remove"></div></div>
+                            <button type="submit" class="button button-danger">Remove selected sections</button>
+                        </form>
+                        <hr>
+                        <button type="button" class="button button-danger-outline" data-action="delete-merge">Delete selected merged course</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer microcopy -->
+        <footer class="prototype-footer">Prototype data is fictional and remains in this browser tab. Nothing is sent to a server.</footer>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
