@@ -1,12 +1,14 @@
 :root {
     --psu-blue: #041E42;
     --psu-light-blue: #1E407C;
-    --canvas-blue: #0374B5;
-    --canvas-text: #2D3B45;
-    --muted-text: #6A737B;
-    --neutral-border: #C7CDD1;
-    --neutral-light: #E8E8E8;
-    --neutral-background: #F5F5F5;
+    --canvas-blue: #1d4f78;
+    --canvas-text: #263746;
+    --muted-text: #64717c;
+    --neutral-border: #c7d0d8;
+    --neutral-light: #e4e9ed;
+    --neutral-background: #eef1f3;
+    --workspace-background: #edf0f2;
+    --canvas-navy: #173650;
     --info-background: #E5F3FC;
     --info-text: #0B2E4D;
     --warning-background: #FEF7E5;
@@ -19,7 +21,7 @@ html { font-size: 16px; }
 
 body {
     margin: 0;
-    background: #fff;
+    background: var(--canvas-navy);
     color: var(--canvas-text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     line-height: 1.45;
@@ -28,11 +30,23 @@ body {
 button, input, select { font: inherit; }
 button, select { cursor: pointer; }
 
+.canvas-shell {
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: var(--workspace-background);
+    box-shadow: 0 1rem 3rem rgba(4,30,66,.2);
+}
+
+.canvas-workspace { min-width: 0; }
 .prototype-page {
     width: 100%;
-    max-width: 1600px;
+    max-width: none;
     margin: 0 auto;
-    padding: 1.5rem clamp(1rem, 3vw, 3rem) 2rem;
+    padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 4vw, 4.5rem) 2.5rem;
 }
 
 .prototype-page h1,
@@ -46,13 +60,12 @@ button, select { cursor: pointer; }
     align-items: end;
     justify-content: space-between;
     gap: 1rem;
-    border-bottom: 4px solid var(--psu-blue);
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--neutral-border);
+    padding: .45rem 0 1.35rem;
+    margin-bottom: 1.25rem;
 }
-
 .eyebrow {
-    color: var(--muted-text);
+    color: #53616d;
     font-size: .75rem;
     font-weight: 700;
     letter-spacing: .08em;
@@ -61,13 +74,17 @@ button, select { cursor: pointer; }
 }
 
 .page-intro { margin-top: .35rem !important; }
-.prototype-status, .prototype-footer { color: var(--muted-text); font-size: .8rem; }
+.prototype-status, .prototype-footer { color: #53616d; font-size: .8rem; }
+.prototype-header h1 { letter-spacing: -.025em; }
+.prototype-header .page-intro { color: var(--muted-text); max-width: 42rem; }
 
 .prototype-banner {
     display: flex;
     align-items: flex-start;
     gap: .65rem;
+    border: 1px solid #cbdde8;
     border-left: 4px solid var(--canvas-blue);
+    border-radius: .55rem;
     padding: .7rem .85rem;
     margin-bottom: .5rem;
 }
@@ -91,20 +108,24 @@ button, select { cursor: pointer; }
 .button-secondary { border-color: var(--neutral-border); background: #fff; color: var(--canvas-text); }
 .button-danger { border-color: #C02B0A; background: #C02B0A; color: #fff; }
 .button-danger-outline { border-color: #C02B0A; background: #fff; color: #8A1F08; }
-.button:disabled { border-color: var(--neutral-border); background: var(--neutral-border); color: var(--canvas-text); cursor: not-allowed; opacity: 1; }
+.button:disabled { border-color: #6b7780; background: #d8e0e6; color: #263746; cursor: not-allowed; opacity: 1; }
 .button:hover:not(:disabled) { filter: brightness(.92); }
+.button:focus-visible, .text-button:focus-visible, .tab:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #174f7a; outline-offset: 3px; }
 
 .feedback { border-left: 4px solid var(--canvas-blue); background: var(--info-background); color: var(--info-text); padding: .7rem .85rem; margin: .75rem 0; }
 .is-hidden { display: none !important; }
 
 .course-discovery {
-    border-bottom: 1px solid var(--neutral-border);
-    padding: .25rem 0 1rem;
-    margin-bottom: 1rem;
+    border: 1px solid var(--neutral-light);
+    border-radius: .75rem;
+    background: #fff;
+    padding: 1.35rem 1.5rem 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 .2rem .7rem rgba(38,55,70,.06);
 }
 .discovery-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: .65rem; }
 .discovery-heading p { font-size: .875rem; margin-top: .15rem; }
-.filter-count { color: var(--muted-text); font-size: .875rem; }
+.filter-count { color: #53616d; font-size: .875rem; }
 .filter-controls { display: flex; align-items: end; flex-wrap: wrap; gap: .65rem; }
 .filter-controls > div { min-width: 8.5rem; }
 .filter-controls .search-field { flex: 1 1 24rem; min-width: min(100%, 20rem); }
@@ -120,15 +141,15 @@ button, select { cursor: pointer; }
 }
 .text-button { align-self: end; border: 0; background: transparent; color: var(--psu-light-blue); padding: .5rem 0; text-decoration: underline; }
 
-.tabs-shell { border-bottom: 2px solid var(--neutral-border); }
+.tabs-shell { border-bottom: 1px solid var(--neutral-border); }
 .tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
-.tab { border: 0; border-bottom: 4px solid transparent; background: transparent; color: var(--psu-light-blue); font-weight: 700; padding: .7rem .9rem; }
+.tab { border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--psu-light-blue); font-weight: 700; padding: .7rem .9rem; }
 .tab:hover, .tab:focus-visible { border-bottom-color: var(--psu-light-blue); }
 .tab.is-active { border-bottom-color: var(--psu-blue); color: var(--psu-blue); }
 .tab-panel { padding-top: 1rem; }
 .tab-panel[hidden] { display: none; }
 
-.workflow-card { border: 1px solid var(--neutral-light); border-radius: .35rem; background: #fff; }
+.workflow-card { border: 1px solid var(--neutral-light); border-radius: .75rem; background: #fff; box-shadow: 0 .2rem .7rem rgba(38,55,70,.06); }
 .workflow-card-header { border-bottom: 1px solid var(--neutral-light); padding: 1rem 1.25rem; }
 .workflow-card-header p { margin-top: .25rem; }
 .workflow-card-body { padding: 1.25rem; }
@@ -190,6 +211,7 @@ hr { border: 0; border-top: 1px solid var(--neutral-light); margin: 1.25rem 0; }
 :focus-visible { outline: 3px solid var(--canvas-blue); outline-offset: 2px; }
 
 @media (max-width: 700px) {
+    .canvas-shell { margin: 0; border-radius: 0; }
     .prototype-header, .discovery-heading { align-items: flex-start; flex-direction: column; }
     .prototype-status { text-align: left; }
     .filter-controls > div, .filter-controls .search-field { flex: 1 1 100%; min-width: 100%; }
