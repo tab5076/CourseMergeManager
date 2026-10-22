@@ -80,7 +80,9 @@
         state = { courses: clone(seedCourses), merges: clone(seedMerges), baseId: '', selections: { 'create-sections': [], 'edit-sections': [], 'remove-sections': [] } };
         filters = { text: '', term: '', campus: '', eligibility: 'eligible', sort: 'term' };
         document.querySelector('#course-filter').value = '';
-        document.querySelector('#ferpa-agreement').hidden = false;
+        root.classList.add('is-purpose-locked');
+        document.querySelector('#purpose-landing').hidden = false;
+        document.querySelector('[data-purpose-status]').textContent = '';
         showFeedback('');
         populateFilterOptions();
         render();
@@ -240,7 +242,8 @@
         const tab = event.target.closest('[role="tab"]');
         if (tab) activateTab(tab);
         if (action === 'reset' && window.confirm('Reset all prototype changes?')) reset();
-        if (action === 'continue-ferpa') { document.querySelector('#ferpa-agreement').hidden = true; showFeedback('Thanks. You can now explore the course merge workflows.'); }
+        if (action === 'continue-purpose') { document.querySelector('#purpose-landing').hidden = true; root.classList.remove('is-purpose-locked'); showFeedback('Thanks. You can now explore the course merge workflows.'); }
+        if (action === 'cancel-purpose') { document.querySelector('[data-purpose-status]').textContent = 'Merge canceled. You may close this page.'; }
         if (action === 'clear-filters') { filters = { ...filters, text: '', term: '', campus: '', eligibility: 'eligible', sort: 'term' }; document.querySelector('#course-filter').value = ''; populateFilterOptions(); render(); }
         if (action === 'remove-selection') { const item = event.target.closest('[data-action="remove-selection"]'); if (item.dataset.selectionName === 'base') state.baseId = ''; else state.selections[item.dataset.selectionName] = selectedFor(item.dataset.selectionName).filter(id => id !== item.dataset.selectionId); render(); }
         if (action === 'delete-merge') { const select = document.querySelector('#remove-merge'); const merge = mergeById(select.value); if (merge && window.confirm(`Delete “${merge.name}” and restore all of its sections?`)) { state.merges = state.merges.filter(item => item.id !== merge.id); showFeedback(`“${merge.name}” was deleted in prototype mode. No Canvas changes were made.`); render(); } }

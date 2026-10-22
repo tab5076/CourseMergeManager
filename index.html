@@ -20,16 +20,28 @@
              <div class="prototype-status">Demo user: John Doe · Spring 2026</div>
         </header>
 
+        <section id="purpose-landing" class="purpose-landing" aria-labelledby="purpose-title">
+            <div class="purpose-content">
+                <p class="eyebrow">Before you begin</p>
+                <h2 id="purpose-title">Confirmation of Educational or Pedagogical Purpose of Canvas Section Merge</h2>
+                <p>Please review the following to ensure you are able to merge the sections. Note: the instructor of record must acknowledge understanding and consent to merge sections.</p>
+                <p>If your students will have occasion to see each other in the same classroom or collaborate (physically or online) with each other for educational or pedagogical reasons related to the course during the semester, the sections can be merged in Canvas. Click Yes to continue and merge sections.</p>
+                <p>If you teach several sections of the same course but the students do not interact with each other for educational or pedagogical reasons related to the course in a classroom or online, the sections cannot be merged in Canvas. Click Cancel to exit.</p>
+                <p>If you have any questions about FERPA and online course-sites that involve more than one enrollment section, please contact the Office of the University Registrar at 814-863-3681 or email <a href="mailto:registrar@psu.edu">registrar@psu.edu</a>.</p>
+                <p>If you have questions about the Merge Course Manager tool please email support staff at <a href="mailto:LMSsupport@psu.edu">LMSsupport@psu.edu</a>.</p>
+                <div class="purpose-actions">
+                    <button type="button" class="button button-primary" data-action="continue-purpose">Yes, continue</button>
+                    <button type="button" class="button button-secondary" data-action="cancel-purpose">Cancel</button>
+                </div>
+                <p class="purpose-status" data-purpose-status role="status" aria-live="polite"></p>
+            </div>
+        </section>
+
         <!-- Top banners -->
         <section class="prototype-banner info-banner" role="status" aria-label="Prototype information">
             <span class="banner-icon" aria-hidden="true">ⓘ</span>
             <div class="banner-copy"><strong>Design preview</strong><small>Browser-only prototype. No authentication, Canvas, LMIS, or database calls are made.</small></div>
             <button type="button" class="button button-secondary button-small" data-action="reset">Reset</button>
-        </section>
-        <section id="ferpa-agreement" class="prototype-banner warning-banner" role="alert" aria-labelledby="ferpa-title">
-            <span class="banner-icon" aria-hidden="true">⚠</span>
-            <div class="banner-copy"><strong id="ferpa-title">Educational or pedagogical purpose required</strong><small>Please confirm that this section merge supports an educational or pedagogical purpose before continuing.</small></div>
-            <button type="button" class="button button-primary button-small" data-action="continue-ferpa">Yes, continue</button>
         </section>
 
         <div id="prototype-feedback" class="feedback is-hidden" role="status" aria-live="polite"></div>
