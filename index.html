@@ -15,9 +15,7 @@
         <header class="prototype-header">
             <div>
                 <h1>Course Merge Manager</h1>
-                <p class="page-intro">Combine course sections into a single Canvas course workspace.</p>
             </div>
-             <div class="prototype-status">Demo user: John Doe · Spring 2026</div>
         </header>
 
         <section id="purpose-landing" class="purpose-landing" aria-labelledby="purpose-title">
@@ -30,8 +28,8 @@
                 <p>If you have any questions about FERPA and online course-sites that involve more than one enrollment section, please contact the Office of the University Registrar at 814-863-3681 or email <a href="mailto:registrar@psu.edu">registrar@psu.edu</a>.</p>
                 <p>If you have questions about the Merge Course Manager tool please email support staff at <a href="mailto:LMSsupport@psu.edu">LMSsupport@psu.edu</a>.</p>
                 <div class="purpose-actions">
-                    <button type="button" class="button button-primary" data-action="continue-purpose">Yes, continue</button>
                     <button type="button" class="button button-secondary" data-action="cancel-purpose">Cancel</button>
+                    <button type="button" class="button button-primary" data-action="continue-purpose">Yes, continue</button>
                 </div>
                 <p class="purpose-status" data-purpose-status role="status" aria-live="polite"></p>
             </div>
@@ -69,14 +67,6 @@
                     <select id="campus-filter" aria-label="Filter by campus"><option value="">All campuses</option></select>
                 </div>
                 <div>
-                    <label for="eligibility-filter">Eligibility</label>
-                    <select id="eligibility-filter" aria-label="Filter by eligibility">
-                        <option value="eligible">Eligible</option>
-                        <option value="all">All</option>
-                        <option value="published">Published</option>
-                    </select>
-                </div>
-                <div>
                     <label for="course-sort">Sort</label>
                     <select id="course-sort" aria-label="Sort courses">
                         <option value="term">Semester</option>
@@ -92,9 +82,9 @@
         <!-- Workflow tabs -->
         <div class="tabs-shell">
             <div class="tabs" id="prototype-tabs" role="tablist" aria-label="Course merge workflows">
-                <button class="tab is-active" id="create-tab" data-tab-target="create" type="button" role="tab" aria-controls="create" aria-selected="true">Create merged course</button>
-                <button class="tab" id="edit-tab" data-tab-target="edit" type="button" role="tab" aria-controls="edit" aria-selected="false" tabindex="-1">Edit merged course</button>
-                <button class="tab" id="remove-tab" data-tab-target="remove" type="button" role="tab" aria-controls="remove" aria-selected="false" tabindex="-1">Remove sections</button>
+                <button class="tab is-active" id="create-tab" data-tab-target="create" type="button" role="tab" aria-controls="create" aria-selected="true">Create Merged Course</button>
+                <button class="tab" id="edit-tab" data-tab-target="edit" type="button" role="tab" aria-controls="edit" aria-selected="false" tabindex="-1">Edit Merged Course</button>
+                <button class="tab" id="remove-tab" data-tab-target="remove" type="button" role="tab" aria-controls="remove" aria-selected="false" tabindex="-1">Remove Sections</button>
             </div>
         </div>
 
@@ -102,10 +92,6 @@
             <!-- Create workflow -->
             <section class="tab-panel is-active" id="create" role="tabpanel" aria-labelledby="create-tab" tabindex="0">
                 <div class="workflow-card">
-                    <div class="workflow-card-header">
-                        <h2>Create a merged course</h2>
-                        <p>Start with a base course, then choose the sections to bring together.</p>
-                    </div>
                     <div class="workflow-card-body">
                         <form data-workflow="create" novalidate>
                             <div class="field-group">
@@ -121,13 +107,12 @@
                             </div>
                             <div class="field-group">
                                 <label for="create-sections-list">Additional sections</label>
-                                <p class="field-note">Sections must be unpublished. Any content in these sections will <strong>not</strong> be retained after the merge is complete.</p>
-                                <div class="course-key" id="create-sections-list">Display Key: Course Name(SIS ID(Semester) - Campus - Mode - Subject - Catalog Number - Section)</div>
+                                <p class="field-note">Sections must be unpublished. Any content in these sections will <strong>NOT</strong> be retained after the merge is complete.</p>
+                                <div class="course-key" id="create-sections-list">Display Key: Course Name(SIS ID(Semester) - Campus - Mode Subject - Catalog Number - Section)</div>
                                 <div class="course-picker" data-course-list="create" aria-describedby="create-sections-list"></div>
                                 <div class="helper-message" data-selected-summary="create-sections"></div>
                                 <div class="invalid-feedback selection-error" data-selection-error="create"></div>
                             </div>
-                            <div class="checkbox-group"><input type="checkbox" id="create-groups" name="groups"><label for="create-groups">Create student groups for each section</label></div>
                             <div class="checkbox-group"><input type="checkbox" id="create-go" name="go"><label for="create-go">Open the merged course when complete</label></div>
                             <div class="requirements" data-create-requirements>Enter a name, choose a base course, and select at least one additional section.</div>
                             <button class="button button-primary" type="submit" data-create-submit disabled aria-disabled="true">Merge courses</button>
@@ -139,11 +124,11 @@
             <!-- Edit workflow -->
             <section class="tab-panel" id="edit" role="tabpanel" aria-labelledby="edit-tab" tabindex="0" hidden>
                 <div class="workflow-card">
-                    <div class="workflow-card-header"><h2>Edit a merged course</h2><p>Add another eligible section to an existing merge.</p></div>
                     <div class="workflow-card-body">
                         <form data-workflow="edit" novalidate>
                             <div class="field-group"><label for="edit-merge">Merged course</label><select id="edit-merge" name="merge" required data-merged-course><option value="">Select a merged course</option></select></div>
                             <div class="field-group"><label for="edit-sections-list">Sections to add</label><div class="course-picker" id="edit-sections-list" data-course-list="edit"></div><div class="helper-message" data-selected-summary="edit-sections"></div><div class="invalid-feedback selection-error" data-selection-error="edit"></div></div>
+                            <div class="checkbox-group"><input type="checkbox" id="edit-go" name="edit-go"><label for="edit-go">Continue to Course Home Page</label></div>
                             <button class="button button-primary" type="submit">Add selected sections</button>
                         </form>
                     </div>
@@ -153,7 +138,6 @@
             <!-- Remove workflow -->
             <section class="tab-panel" id="remove" role="tabpanel" aria-labelledby="remove-tab" tabindex="0" hidden>
                 <div class="workflow-card">
-                    <div class="workflow-card-header"><h2>Manage merged sections</h2><p>Remove individual sections or delete the entire merge.</p></div>
                     <div class="workflow-card-body">
                         <form data-workflow="remove" novalidate>
                             <div class="field-group"><label for="remove-merge">Merged course</label><select id="remove-merge" name="merge" required data-merged-course><option value="">Select a merged course</option></select></div>

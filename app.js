@@ -40,11 +40,34 @@
         ['c135', '22681---7001', 'Art History: Renaissance to Modern', '202627FA', 'UP', 'H7SCM', 'ART H 111', '001', 'unpublished'],
         ['c136', '22711---7002', 'Art History: Renaissance to Modern', '202627SP', 'UP', 'H7SCM', 'ART H 111', '002', 'published'],
         ['c137', '22711---7101', 'Nursing Concepts and Practice', '202627SP', 'UP', 'H7SCM', 'NURS 200', '001', 'unpublished']
-    ].map(([id, sisId, name, term, campus, mode, subject, section, state]) => ({ id, sisId, name, term, campus, mode, subject, catalog: subject, section, state }));
+    ].map(([id, sisId, name, term, campus, mode, subject, section, state]) => {
+        const subjectParts = subject.match(/^(.+)\s+([A-Za-z0-9]+)$/);
+        const normalizedSubject = subjectParts ? subjectParts[1] : subject;
+        const catalog = subjectParts ? subjectParts[2] : subject;
+        return { id, sisId, name, canvasName: `${name} - ${term}`, term, campus, mode, subject: normalizedSubject, catalog, section, state };
+    }).map(course => {
+        const profile = {
+            'Intro Stat Bus Dec': { mode: 'H7', subject: 'STAT', catalog: '200' },
+            'Calculus with Analytic Geometry': { mode: 'H7', subject: 'MATH', catalog: '140' },
+            'Introduction to Psychology': { mode: 'H7', subject: 'PSYCH', catalog: '100' },
+            'Technical Writing': { mode: 'WC', subject: 'ENGL', catalog: '202' },
+            'American Literature Since 1865': { mode: 'H7', subject: 'ENGL', catalog: '232' },
+            'Introduction to Microeconomics': { mode: 'H7', subject: 'ECON', catalog: '102' },
+            'Introduction to Macroeconomics': { mode: 'H7', subject: 'ECON', catalog: '104' },
+            'Principles of Marketing': { mode: 'H7', subject: 'BA', catalog: '301' },
+            'Data Structures and Algorithms': { mode: 'H7', subject: 'CMPSC', catalog: '221' },
+            'Introduction to Human Development': { mode: 'H7', subject: 'HDFS', catalog: '129' },
+            'Environmental Science': { mode: 'H7', subject: 'EARTH', catalog: '103' },
+            'Art History: Renaissance to Modern': { mode: 'H7', subject: 'ARTH', catalog: '111' },
+            'Nursing Concepts and Practice': { mode: 'H7', subject: 'NURS', catalog: '200' }
+        }[course.name];
+        return profile ? { ...course, ...profile } : course;
+    });
 
     const seedMerges = [{ id: 'merge-1', sisId: 'MRG-BIO-110-JLEE', name: 'BIOL 110 - Combined Sections', term: 'Spring 2026', sections: ['c101', 'c102'] }];
     let state;
     let filters;
+    let feedbackTimer;
 
     const clone = value => JSON.parse(JSON.stringify(value));
     const courses = () => state.courses;
@@ -52,33 +75,37 @@
     const mergeById = id => state.merges.find(merge => merge.id === id);
     const selectedFor = name => state.selections[name] || [];
     const escapeHtml = value => String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
-    const searchable = course => [course.name, course.sisId, course.term, course.campus, course.mode, course.subject, course.catalog, course.section].join(' ').toLowerCase();
+    const searchable = course => [course.name, course.canvasName, course.sisId, course.term, course.campus, course.mode, course.subject, course.catalog, course.section].join(' ').toLowerCase();
 
     function courseLabel(course) {
-        return `${course.name}(${course.sisId}(${course.term})-${[course.campus, course.mode, course.subject, course.section].filter(Boolean).join('-')})`;
+        return `${course.name}(${course.sisId}(${course.term})-${[course.campus, `${course.mode}${course.subject}`, course.catalog, course.section].filter(Boolean).join('-')})`;
     }
 
     function visible(course) {
         const textMatch = !filters.text || searchable(course).includes(filters.text);
         const termMatch = !filters.term || course.term === filters.term;
         const campusMatch = !filters.campus || course.campus === filters.campus;
-        const stateMatch = filters.eligibility === 'all' || (filters.eligibility === 'published' ? course.state === 'published' : course.state === 'unpublished');
-        return textMatch && termMatch && campusMatch && stateMatch;
+        return course.state === 'unpublished' && textMatch && termMatch && campusMatch;
     }
 
     function sortCourses(items) {
         return [...items].sort((a, b) => String(a[filters.sort] || '').localeCompare(String(b[filters.sort] || ''), undefined, { numeric: true, sensitivity: 'base' }));
     }
 
-    function showFeedback(message, type = 'info') {
+    function showFeedback(message, type = 'success') {
         const feedback = document.querySelector('#prototype-feedback');
+        window.clearTimeout(feedbackTimer);
         feedback.textContent = message;
-        feedback.className = message ? `feedback ${type}` : 'feedback is-hidden';
+        feedback.className = message ? `feedback toast-notification ${type}` : 'feedback is-hidden';
+        if (message) feedbackTimer = window.setTimeout(() => {
+            feedback.className = 'feedback is-hidden';
+            feedback.textContent = '';
+        }, 4500);
     }
 
     function reset() {
         state = { courses: clone(seedCourses), merges: clone(seedMerges), baseId: '', selections: { 'create-sections': [], 'edit-sections': [], 'remove-sections': [] } };
-        filters = { text: '', term: '', campus: '', eligibility: 'eligible', sort: 'term' };
+        filters = { text: '', term: '', campus: '', sort: 'term' };
         document.querySelector('#course-filter').value = '';
         root.classList.add('is-purpose-locked');
         document.querySelector('#purpose-landing').hidden = false;
@@ -94,14 +121,13 @@
             select.innerHTML = `<option value="">${placeholder}</option>` + values.sort().map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
             select.value = filters[selector === '#term-filter' ? 'term' : 'campus'];
         });
-        document.querySelector('#eligibility-filter').value = filters.eligibility;
         document.querySelector('#course-sort').value = filters.sort;
     }
 
     function courseCard(course, name, disabled = false, checked = false) {
         return `<label class="course-choice ${disabled ? 'is-disabled' : ''} ${checked ? 'is-selected' : ''}">
             <input class="form-check-input" type="checkbox" name="${name}" value="${course.id}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
-            <span class="course-choice-content"><strong>${escapeHtml(courseLabel(course))}</strong><small>${course.state === 'unpublished' ? 'Unpublished and eligible for merge' : 'Published · Published courses cannot be selected'}</small></span>
+            <span class="course-choice-content"><strong>${escapeHtml(courseLabel(course))}</strong><small>${escapeHtml(course.canvasName)}${course.state === 'published' ? ' · Published courses cannot be selected' : ''}</small></span>
         </label>`;
     }
 
@@ -166,7 +192,7 @@
         if (!name.value.trim() || !base || !ids.length) return;
         const merge = { id: `merge-${Date.now()}`, sisId: `MRG-${base.sisId}-JLEE`, name: name.value.trim(), term: base.term, sections: [base.id, ...ids] };
         state.merges.push(merge);
-        state.selections['create-sections'] = [];
+        state.selections['create-sections'] = {};
         state.baseId = '';
         form.reset();
         showFeedback(`“${merge.name}” was created in prototype mode. No Canvas changes were made.`);
@@ -222,9 +248,8 @@
     root.addEventListener('change', event => {
         if (event.target.id === 'term-filter') filters.term = event.target.value;
         if (event.target.id === 'campus-filter') filters.campus = event.target.value;
-        if (event.target.id === 'eligibility-filter') filters.eligibility = event.target.value;
         if (event.target.id === 'course-sort') filters.sort = event.target.value;
-        if (event.target.matches('#term-filter, #campus-filter, #eligibility-filter, #course-sort')) render();
+        if (event.target.matches('#term-filter, #campus-filter, #course-sort')) render();
         if (event.target.matches('input[type="checkbox"][name]')) {
             const old = selectedFor(event.target.name);
             state.selections[event.target.name] = event.target.checked ? [...new Set([...old, event.target.value])] : old.filter(id => id !== event.target.value);
@@ -242,9 +267,9 @@
         const tab = event.target.closest('[role="tab"]');
         if (tab) activateTab(tab);
         if (action === 'reset' && window.confirm('Reset all prototype changes?')) reset();
-        if (action === 'continue-purpose') { document.querySelector('#purpose-landing').hidden = true; root.classList.remove('is-purpose-locked'); showFeedback('Thanks. You can now explore the course merge workflows.'); }
+        if (action === 'continue-purpose') { document.querySelector('#purpose-landing').hidden = true; root.classList.remove('is-purpose-locked'); showFeedback('You can now explore the course merge workflows.', 'info'); }
         if (action === 'cancel-purpose') { document.querySelector('[data-purpose-status]').textContent = 'Merge canceled. You may close this page.'; }
-        if (action === 'clear-filters') { filters = { ...filters, text: '', term: '', campus: '', eligibility: 'eligible', sort: 'term' }; document.querySelector('#course-filter').value = ''; populateFilterOptions(); render(); }
+        if (action === 'clear-filters') { filters = { ...filters, text: '', term: '', campus: '', sort: 'term' }; document.querySelector('#course-filter').value = ''; populateFilterOptions(); render(); }
         if (action === 'remove-selection') { const item = event.target.closest('[data-action="remove-selection"]'); if (item.dataset.selectionName === 'base') state.baseId = ''; else state.selections[item.dataset.selectionName] = selectedFor(item.dataset.selectionName).filter(id => id !== item.dataset.selectionId); render(); }
         if (action === 'delete-merge') { const select = document.querySelector('#remove-merge'); const merge = mergeById(select.value); if (merge && window.confirm(`Delete “${merge.name}” and restore all of its sections?`)) { state.merges = state.merges.filter(item => item.id !== merge.id); showFeedback(`“${merge.name}” was deleted in prototype mode. No Canvas changes were made.`); render(); } }
     });
