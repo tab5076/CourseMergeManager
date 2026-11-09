@@ -168,7 +168,6 @@
         renderSummary('edit-sections', selectedFor('edit-sections'), 'No sections selected to add.', 'edit-sections');
         renderSummary('remove-sections', selectedFor('remove-sections'), 'No sections selected to remove.', 'remove-sections');
         updateCreateButton();
-        document.querySelector('[data-filter-count]').textContent = `${courses().filter(visible).length} of ${courses().length} courses shown`;
     }
 
     function updateCreateButton() {
